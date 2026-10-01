@@ -1,0 +1,5 @@
+DESIGN_NAME: uart_tx
+VERILOG_FILES: dir::src/*.v
+CLOCK_PORT: clk
+CLOCK_PERIOD: 10
+FP_CORE_UTIL: 45
