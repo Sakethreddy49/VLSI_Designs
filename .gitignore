@@ -1,4 +1,9 @@
 .venv/
 runs/
-.venv/
-runs/
+sim_build/
+__pycache__/
+*.pyc
+results.xml
+*.vcd
+*.fst
+obj_dir/
