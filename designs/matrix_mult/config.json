@@ -1,0 +1,12 @@
+{
+  "DESIGN_NAME": "matrix_mult",
+  "VERILOG_FILES": "dir::matrix_mult.sv",
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 40,
+  "FP_SIZING": "relative",
+  "FP_CORE_UTIL": 45,
+  "PL_TARGET_DENSITY_PCT": 55,
+  "GRT_ANTENNA_ITERS": 10,
+  "GRT_ANTENNA_MARGIN": 30,
+  "RUN_HEURISTIC_DIODE_INSERTION": true
+}
