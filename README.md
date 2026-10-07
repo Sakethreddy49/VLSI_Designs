@@ -6,6 +6,7 @@ Hands-on RTL-to-GDSII projects using an open-source flow (Yosys, OpenROAD, Magic
 |---|---|---|---|
 | `designs/uart_tx` | UART transmitter (115200 baud @ 100 MHz) | cocotb + Icarus Verilog | OpenLane 2.3.10 |
 | `designs/spm` | Serial-parallel multiplier (LibreLane example) | n/a (toolchain baseline) | LibreLane |
+| `designs/handshake_dut` | Time-dependent READY/VALID protocol monitor | cocotb + Icarus Verilog | OpenLane-ready |
 
 ## uart_tx: UART transmitter
 

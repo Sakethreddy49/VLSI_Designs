@@ -1,0 +1,8 @@
+# OpenLane configuration for handshake_dut.
+# The 10 ns clock period is an explicit demo assumption; replace it with the
+# real interface constraint before signing off physical design.
+DESIGN_NAME: handshake_dut
+VERILOG_FILES: dir::src/*.sv
+CLOCK_PORT: clk
+CLOCK_PERIOD: 10
+FP_CORE_UTIL: 45
