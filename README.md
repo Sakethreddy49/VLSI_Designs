@@ -7,7 +7,7 @@ Hands-on RTL-to-GDSII projects using an open-source flow (Yosys, OpenROAD, Magic
 | `designs/uart_tx` | UART transmitter (115200 baud @ 100 MHz) | cocotb + Icarus Verilog | OpenLane 2.3.10 |
 | `designs/spm` | Serial-parallel multiplier (LibreLane example) | n/a (toolchain baseline) | LibreLane |
 | `designs/matrix_mult` | 3x3 matrix multiplier for 8-bit unsigned matrices | cocotb + Icarus Verilog | OpenLane 2, Sky130 |
-| `designs/handshake_dut` | Time-dependent READY/VALID protocol monitor | cocotb + Icarus Verilog | OpenLane-ready |
+| `designs/handshake_dut` | Time-dependent READY/VALID protocol monitor | cocotb + Icarus Verilog | OpenLane 2, Sky130 |
 
 ## uart_tx: UART transmitter
 
@@ -143,3 +143,71 @@ python designs/matrix_mult/update_readme.py
 - Max-slew and max-capacitance warnings remain in some corners (each input fans out to
   three multipliers); they do not fail the flow.
 <!-- matrix_mult:end -->
+
+<!-- handshake_dut:start -->
+## READY/VALID Handshake Monitor (`designs/handshake_dut`)
+
+A small protocol monitor that checks one rule: after `ready` is seen, `valid` must arrive
+exactly one clock cycle later. It reports the outcome as a one-cycle pulse on one of four
+outputs. Reset is asynchronous and active low.
+
+| Port | Dir | Meaning |
+|---|---|---|
+| `clk` | in | System clock |
+| `rst_n` | in | Asynchronous active-low reset |
+| `ready` | in | Request event seen this cycle; starts a transaction when the monitor is idle |
+| `valid` | in | Response event seen this cycle |
+| `handshake_ok` | out | `valid` arrived exactly one cycle after `ready` |
+| `error_early` | out | `valid` arrived in the same cycle as `ready` |
+| `error_late` | out | `valid` arrived after the one-cycle deadline |
+| `error_missing` | out | `valid` never arrived (a fixed threshold in the RTL) |
+
+![handshake_dut layout](designs/handshake_dut/results/handshake_dut_layout.png)
+
+### Results (OpenLane 2, Sky130)
+
+| Metric | Value |
+|---|---|
+| Clock period | 10 ns (100 MHz, assumed target) |
+| Die size | 44.7 x 55.4 um (0.0025 mm2) |
+| Instance count | 67 |
+| Cell area | 612 um2 |
+| Worst setup slack | 6.16 ns |
+| Worst hold slack | 0.11 ns |
+| Total power (tool estimate) | 0.22 mW |
+| Routed wirelength | 855 um |
+| DRC | pass (0 violations) |
+| LVS | pass (0 violations) |
+| Antenna (violating nets) | pass (0 violations) |
+
+### Verification
+
+Four cocotb tests (Icarus Verilog): an early `valid` is rejected, a `valid` exactly one
+cycle late is accepted, a `valid` after the deadline is flagged late, and a missing `valid`
+raises the missing error. Verilator lint (`-Wall`) reports no warnings.
+
+### Reproduce
+
+```bash
+# 1. Simulate (cocotb venv)
+cd designs/handshake_dut/test && make && cd ../../..
+
+# 2. Lint
+verilator --lint-only -Wall designs/handshake_dut/src/handshake_dut.sv
+
+# 3. RTL to GDS (repo .venv, Docker)
+cd designs/handshake_dut && openlane --dockerized config.yaml && cd ../..
+
+# 4. Layout picture (after copying final/metrics.json and the GDS from the run folder
+#    into designs/handshake_dut/results/)
+python designs/handshake_dut/plot_layout.py
+```
+
+### Notes
+
+- The source file came without a specification. The behavior above and the 10 ns clock are
+  documented as assumptions in `docs/requirements.md`, not signoff constraints.
+- Setup slack is 6.16 ns at the 10 ns clock, so there is plenty of margin; a tighter clock
+  has not been tried.
+- DRC, LVS and antenna all pass in the run behind these numbers.
+<!-- handshake_dut:end -->
