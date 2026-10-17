@@ -52,4 +52,4 @@ cd designs/handshake_dut
 openlane --dockerized config.yaml
 ```
 
-No GDSII result is claimed by this demo until that command is run successfully.
+Run results (metrics, GDS and layout image) are in `results/`; the numbers are in the root README.
