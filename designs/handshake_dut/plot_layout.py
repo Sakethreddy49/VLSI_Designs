@@ -1,8 +1,8 @@
 """Render a GDS layout to a PNG with KLayout (headless, no GUI needed).
 
 Usage (from the repo root, with the repo's .venv active):
-    python designs/matrix_mult/plot_layout.py
-    python designs/matrix_mult/plot_layout.py <input.gds> <output.png>
+    python designs/handshake_dut/plot_layout.py
+    python designs/handshake_dut/plot_layout.py <input.gds> <output.png>
 """
 import sys
 from pathlib import Path
